@@ -6,7 +6,7 @@ mpeg2ts
 [![Actions Status](https://github.com/sile/mpeg2ts/workflows/CI/badge.svg)](https://github.com/sile/mpeg2ts/actions)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
-MPEG2-TS decoding/encoding library for Rust.
+MPEG2-TS decoding/encoding library for Rust. This fork is meant to be more resilient to input. No panics, less errors.
 
 [Documentation](https://docs.rs/mpeg2ts)
 
