@@ -1,12 +1,12 @@
 [package]
-name = "mpeg2ts"
+name = "mpegts"
 version = "0.3.1"
-authors = ["Takeru Ohta <phjgt308@gmail.com>"]
+authors = ["Takeru Ohta <phjgt308@gmail.com>", "Aleksander Dutkowski"]
 description = "MPEG2-TS decoding/encoding library"
-homepage = "https://github.com/sile/mpeg2ts"
-repository = "https://github.com/sile/mpeg2ts"
+homepage = "https://github.com/aleek/mpegts"
+repository = "https://github.com/aleek/mpegts"
 readme = "README.md"
-keywords = ["mpeg2ts"]
+keywords = ["mpegts"]
 license = "MIT"
 edition = "2021"
 
