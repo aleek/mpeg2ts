@@ -8,6 +8,7 @@ pub use self::packet::{TsHeader, TsPacket, TsPayload};
 pub use self::pat::ProgramAssociation;
 pub use self::pmt::{Descriptor, EsInfo};
 pub use self::reader::{ReadTsPacket, TsPacketReader};
+pub use self::notsopickyreader::TsPacketNotSoPickyReader;
 pub use self::types::{
     ContinuityCounter, LegalTimeWindow, Pid, PiecewiseRate, SeamlessSplice,
     TransportScramblingControl, VersionNumber,
@@ -26,6 +27,7 @@ pub mod payload {
 }
 
 mod adaptation_field;
+mod notsopickyreader;
 mod null;
 mod packet;
 mod pat;

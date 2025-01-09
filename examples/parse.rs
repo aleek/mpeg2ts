@@ -2,8 +2,8 @@
 extern crate trackable;
 
 use clap::Parser;
-use mpeg2ts::pes::{PesPacketReader, ReadPesPacket};
-use mpeg2ts::ts::{ReadTsPacket, TsPacketReader, TsPacketWriter, WriteTsPacket};
+use mpegts::pes::{PesPacketReader, ReadPesPacket};
+use mpegts::ts::{ReadTsPacket, TsPacketReader, TsPacketWriter, WriteTsPacket};
 use std::io::Write;
 use trackable::error::Failure;
 
