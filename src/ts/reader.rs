@@ -115,7 +115,7 @@ impl<R: Read> ReadTsPacket for TsPacketReader<R> {
 }
 
 #[derive(Debug, Clone)]
-enum PidKind {
+pub enum PidKind {
     Pmt,
     Pes,
 }

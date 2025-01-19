@@ -1,18 +1,22 @@
-use crate::ts::payload::{Bytes, Null, Pat};
-use crate::ts::{AdaptationField, Pid, TsHeader, TsPacket, TsPayload, ReadTsPacket};
+use crate::ts::payload::{Bytes, Null, Pat, Pes, Pmt};
+use crate::ts::{AdaptationField, Pid, TsHeader, TsPacket, TsPayload, ReadTsPacket, PidKind};
 use crate::{ErrorKind, Result};
+use std::collections::HashMap;
 use std::io::Read;
 
 /// TS packet reader.
 #[derive(Debug)]
 pub struct TsPacketNotSoPickyReader<R> {
     stream: R,
+    pids: HashMap<Pid, PidKind>,
 }
+
 impl<R: Read> TsPacketNotSoPickyReader<R> {
     /// Makes a new `TsPacketNotSoPickyReader` instance.
     pub fn new(stream: R) -> Self {
         TsPacketNotSoPickyReader {
             stream,
+            pids: HashMap::new(),
         }
     }
 
@@ -26,6 +30,7 @@ impl<R: Read> TsPacketNotSoPickyReader<R> {
         self.stream
     }
 }
+
 impl<R: Read> ReadTsPacket for TsPacketNotSoPickyReader<R> {
     fn read_ts_packet(&mut self) -> Result<Option<TsPacket>> {
         let mut reader = self.stream.by_ref().take(TsPacket::SIZE as u64);
@@ -48,6 +53,9 @@ impl<R: Read> ReadTsPacket for TsPacketNotSoPickyReader<R> {
             let payload = match header.pid.as_u16() {
                 Pid::PAT => {
                     let pat = track!(Pat::read_from(&mut reader))?;
+                    for pa in &pat.table {
+                        self.pids.insert(pa.program_map_pid, PidKind::Pmt);
+                    }
                     TsPayload::Pat(pat)
                 }
                 Pid::NULL => {
@@ -60,9 +68,30 @@ impl<R: Read> ReadTsPacket for TsPacketNotSoPickyReader<R> {
                     TsPayload::Raw(bytes)
                 }
                 _ => {
-                    let bytes = track!(Bytes::read_from(&mut reader))?;
+                    if let Some(kind) = self.pids.get(&header.pid).cloned() {
+                        match kind {
+                            PidKind::Pmt => {
+                                let pmt = track!(Pmt::read_from(&mut reader))?;
+                                for es in &pmt.es_info {
+                                    self.pids.insert(es.elementary_pid, PidKind::Pes);
+                                }
+                                TsPayload::Pmt(pmt)
+                            }
+                            PidKind::Pes => {
+                                if payload_unit_start_indicator {
+                                    let pes = track!(Pes::read_from(&mut reader))?;
+                                    TsPayload::Pes(pes)
+                                } else {
+                                    let bytes = track!(Bytes::read_from(&mut reader))?;
+                                    TsPayload::Raw(bytes)
+                                }
+                            }
+                        }
+                    } else {
+                        let bytes = track!(Bytes::read_from(&mut reader))?;
                     
-                    TsPayload::Raw(bytes) 
+                        TsPayload::Raw(bytes)
+                    }
                 }
             };
             Some(payload)
@@ -79,8 +108,8 @@ impl<R: Read> ReadTsPacket for TsPacketNotSoPickyReader<R> {
     }
 }
 
-#[derive(Debug, Clone)]
-enum PidKind {
-    Pmt,
-    Pes,
+impl<R: Read> TsPacketNotSoPickyReader<R> {
+    pub fn set_pid_kind(&mut self, pid: Pid, kind: PidKind) {
+        self.pids.insert(pid, kind);
+    }
 }

@@ -7,7 +7,7 @@ pub use self::adaptation_field::{AdaptationExtensionField, AdaptationField};
 pub use self::packet::{TsHeader, TsPacket, TsPayload};
 pub use self::pat::ProgramAssociation;
 pub use self::pmt::{Descriptor, EsInfo};
-pub use self::reader::{ReadTsPacket, TsPacketReader};
+pub use self::reader::{ReadTsPacket, TsPacketReader, PidKind};
 pub use self::notsopickyreader::TsPacketNotSoPickyReader;
 pub use self::types::{
     ContinuityCounter, LegalTimeWindow, Pid, PiecewiseRate, SeamlessSplice,

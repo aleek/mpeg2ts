@@ -24,7 +24,7 @@ pub struct Pmt {
 impl Pmt {
     const TABLE_ID: u8 = 2;
 
-    pub(super) fn read_from<R: Read>(reader: R) -> Result<Self> {
+    pub fn read_from<R: Read>(reader: R) -> Result<Self> {
         let mut psi = track!(Psi::read_from(reader))?;
         track_assert_eq!(psi.tables.len(), 1, ErrorKind::InvalidInput);
 
@@ -80,7 +80,7 @@ impl Pmt {
         })
     }
 
-    pub(super) fn write_to<W: Write>(&self, writer: W) -> Result<()> {
+    pub fn write_to<W: Write>(&self, writer: W) -> Result<()> {
         track!(self.to_psi().and_then(|psi| psi.write_to(writer)))
     }
 
